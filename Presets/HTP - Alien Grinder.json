@@ -1,0 +1,14 @@
+{
+  "name": "HTP - Alien Grinder",
+  "params": {
+    "MODE": 0,
+    "GRID": 3,
+    "DRYWET": 0.9,
+    "BR_INTERVAL": 16,
+    "BR_GRID": 4,
+    "BR_CHANCE": 0.5,
+    "BR_MIX": 0.8,
+    "BR_GATE": 1,
+    "BR_VAR_GRID": 0
+  }
+}
