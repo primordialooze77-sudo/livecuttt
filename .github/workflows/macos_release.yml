@@ -1,0 +1,39 @@
+name: macOS VST3 + AU Build & Release
+on:
+workflow_dispatch:
+inputs:
+tag:
+description: 'Release tag (e.g. v1.1.0)'
+required: true
+default: 'v1.1.0'
+permissions:
+contents: write
+jobs:
+build:
+runs-on: macos-13
+steps:
+- uses: actions/checkout@v4
+- name: Configure (CMake → Xcode)
+run: cmake -B build -S . -G "Xcode" -DCMAKE_BUILD_TYPE=Release
+- name: Build Release
+run: cmake --build build --config Release
+- name: Stage files
+run: |
+mkdir -p dist/LiveCutR-${{ github.event.inputs.tag }}/Presets
+cp -R build/LiveCutR_artefacts/Release/VST3/LiveCutR.vst3 dist/LiveCutR-${{ github.event.inputs.tag }}/
+cp -R build/LiveCutR_artefacts/Release/AU/LiveCutR.component dist/LiveCutR-${{ github.event.inputs.tag }}/
+cp -R Presets/* dist/LiveCutR-${{ github.event.inputs.tag }}/Presets/ || true
+- name: Zip bundle
+run: |
+cd dist
+zip -r LiveCutR-${{ github.event.inputs.tag }}.zip LiveCutR-${{ github.event.inputs.tag }}
+- name: Upload artifact (zip)
+uses: actions/upload-artifact@v4
+with:
+name: LiveCutR-Release-Zip
+path: dist/LiveCutR-${{ github.event.inputs.tag }}.zip
+- name: Create GitHub Release
+uses: softprops/action-gh-release@v2
+with:
+tag_name: ${{ github.event.inputs.tag }}
+files: dist/LiveCutR-${{ github.event.inputs.tag }}.zip
